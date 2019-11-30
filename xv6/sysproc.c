@@ -51,7 +51,13 @@ sys_sbrk(void)
   if(argint(0, &n) < 0)
     return -1;
   addr = myproc()->sz;
-  myproc()->sz+=n;
+  if (n >= 0){
+    myproc()->sz+=n;
+  }
+  else if(growproc(n) < 0) //"Sbrk is the system call for a process to shrink or grow its memory, implemented by the function growproc (2558). If n is postive, growproc allocates one or more physical pages and maps them at the top of the process’s address space. If n
+                          //is negative, growproc unmaps one or more pages from the process’s address space and
+                          //frees the corresponding physical pages." -> xv6-book
+      return -1;
   /*if(growproc(n) < 0)
     return -1;*/
   return addr;
