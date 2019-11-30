@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.c++": "cpp",
+        "param.h": "c"
+    }
+}
