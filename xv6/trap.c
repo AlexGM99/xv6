@@ -91,6 +91,11 @@ trap(struct trapframe *tf)
   if(tf->trapno == T_PGFLT){ //page fault treatment
     if (rcr2() < myproc()->sz){ // check that we are on range
       char *mem;//page
+      if (PGROUNDDOWN(rcr2()) == myproc()->userStack){
+        cprintf("Illegal access under the stack");
+        myproc()->killed = 1;
+        return;
+      }
       if((mem = kalloc()) == 0){ // error on memory == death
         myproc()->killed = 1;
         return;

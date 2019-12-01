@@ -99,6 +99,8 @@ exec(char *path, char **argv)
   curproc->sz = sz;
   curproc->tf->eip = elf.entry;  // main
   curproc->tf->esp = sp;
+  curproc->userStack = sz-2*PGSIZE; //Si el proceso ocupa una página, la pila estará en la página tercera (1 del proceso, una de guarda y  a continuación la pila). Si ocupa dos, la cuarta (página 3), etc.
+                                      // We have to check that the fail is not in the page under the stack, so we take these page
   switchuvm(curproc);
   freevm(oldpgdir);
   return 0;
