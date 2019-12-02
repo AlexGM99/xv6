@@ -401,16 +401,32 @@ bmap(struct inode *ip, uint bn)
   }
 
   bn -= NINDIRECT;
-  if (bn < NINDIRECT*NINDIRECT)
+  if (bn < (NINDIRECT*NINDIRECT))
   {
     // READ THE BDI
-    if((addr = ip->addrs[NDIRECT+1]) == 0){
-        ip->addrs[NDIRECT] = addr = balloc(ip->dev);
-    }
+    if((addr = ip->addrs[NDIRECT+1]) == 0)
+        ip->addrs[NDIRECT+1] = addr = balloc(ip->dev); // dir of the BDI on addr
     //ACCESS WITH DOUBLE INDIRECTION 
+    int BSI = bn/NINDIRECT; // Number of BSI on the BDI
+    bp = bread(ip->dev, addr);
+    a = (uint*)bp->data;
+    if((addr = a[BSI]) == 0)
+    {
+      a[BSI] = addr = balloc(ip->dev); // addres of the BSI
+      log_write(bp);
+    }
+    brelse(bp);
+    int bl = bn%NINDIRECT; // number of block
+    bp = bread(ip->dev, addr);
+    a = (uint*)bp->data;
+    if ((addr = a[bl]) == 0)
+    {
+      a[bl]  = addr = balloc(ip->dev); //addres of the block
+      log_write(bp);
+    }
+    brelse(bp);
     return addr;
   }
-
   panic("bmap: out of range");
 }
 
@@ -444,6 +460,7 @@ itrunc(struct inode *ip)
     bfree(ip->dev, ip->addrs[NDIRECT]);
     ip->addrs[NDIRECT] = 0;
   }
+  //BDI REMOVE
 
   ip->size = 0;
   iupdate(ip);
