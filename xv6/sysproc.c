@@ -101,9 +101,11 @@ sys_uptime(void)
 int 
 sys_date(void)
 {
-    struct rtcdate *r;
-    if(argptr(0, (char **)&r, 20) < 0)
-        return -1;
-    cmostime(r);
-    return 0;
+  acquire(&tickslock);
+  struct rtcdate *r;
+  if(argptr(0, (char **)&r, 20) < 0)
+      return -1;
+  cmostime(r);
+  release(&tickslock);
+  return 0;
 }

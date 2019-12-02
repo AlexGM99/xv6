@@ -125,7 +125,7 @@ trap(struct trapframe *tf)
               tf->trapno, cpuid(), tf->eip, rcr2());
       panic("trap (2)");
     }
-    if(tf->trapno == T_PGFLT){ //needes page fault treatment
+    if(tf->trapno == T_PGFLT){ // needed page fault treatment
       if (pageFaultTreatment(tf) == 2)
         return;
     }else {

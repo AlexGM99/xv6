@@ -5,9 +5,8 @@ int
 main(int argc, char *argv[])
 {
   char* a = sbrk (15000);
-  printf(1, "fork muere\n");
+  printf(1,"primero fork\n");
   fork();
-  printf(1, "fork funciona\n");
   a[500] = 1;
 
   if ((uint)a + 15000 != (uint) sbrk (-15000))
@@ -33,7 +32,7 @@ main(int argc, char *argv[])
   a=sbrk (-15000);
 
   a=sbrk(1024*4096*2);
-
+  printf(1,"segundo fork\n");
   fork();
 
   a[600*4096*2] = 1;
