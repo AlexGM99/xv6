@@ -37,7 +37,7 @@ idtinit(void)
 int
 pageFaultTreatment(struct trapframe *tf)
 {
-  if (rcr2() < myproc()->sz){ // check that we are on range
+  if (rcr2() < myproc()->sz && rcr2() >= 0){ // check that we are on range
       char *mem;//page
       if (PGROUNDDOWN(rcr2()) == myproc()->userStack){
         cprintf("Illegal access to the guard page under the stack\n");
@@ -114,7 +114,7 @@ trap(struct trapframe *tf)
   default:
     if(myproc() == 0 || (tf->cs&3) == 0){
       // In kernel, it must be our mistake.
-      if (myproc() == 0 && rcr2() > myproc()->sz && PGROUNDDOWN(rcr2()) == myproc()->userStack)//unable to recover it
+      if (myproc() == 0 && rcr2() > myproc()->sz && rcr2() >= 0 && PGROUNDDOWN(rcr2()) == myproc()->userStack)//unable to recover it
         panic("trap (1)");
       if(tf->trapno == T_PGFLT){ //needed a page fault treatment
         if (pageFaultTreatment(tf) <= 1)
