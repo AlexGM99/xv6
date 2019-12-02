@@ -461,6 +461,28 @@ itrunc(struct inode *ip)
     ip->addrs[NDIRECT] = 0;
   }
   //BDI REMOVE
+  int addr;
+  if((addr = ip->addrs[NDIRECT+1]) > 0)
+  {
+    bp = bread(ip->dev, addr);
+    a = (uint*)bp->data; // take all the BSIs dirs container
+    struct buf *freedom;
+    uint *afreedolar;
+    for(int z = 0; z < NINDIRECT; z++)
+    {
+      freedom = bread(ip->dev, a[z]);
+      afreedolar = (uint*)freedom->data;
+      for(int k = 0; k < NINDIRECT; k++)
+      {
+        if(afreedolar[k] > 0)
+          bfree(ip->dev, afreedolar[k]);
+      }
+      brelse(freedom);
+      bfree(ip->dev, a[z]);
+    }
+    brelse(bp);
+    ip->addrs[NDIRECT+1] = 0;
+  }
 
   ip->size = 0;
   iupdate(ip);
