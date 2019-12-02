@@ -470,18 +470,18 @@ itrunc(struct inode *ip)
     uint *afreedolar;
     for(int z = 0; z < NINDIRECT; z++)
     {
-      freedom = bread(ip->dev, a[z]);
+      freedom = bread(ip->dev, a[z]); // takes the BSI block dir with all the dir of its blocks
       afreedolar = (uint*)freedom->data;
       for(int k = 0; k < NINDIRECT; k++)
       {
-        if(afreedolar[k] > 0)
+        if(afreedolar[k] > 0) // used->free
           bfree(ip->dev, afreedolar[k]);
       }
       brelse(freedom);
-      bfree(ip->dev, a[z]);
+      bfree(ip->dev, a[z]); // free the BSI
     }
     brelse(bp);
-    ip->addrs[NDIRECT+1] = 0;
+    ip->addrs[NDIRECT+1] = 0; // cancel the entry
   }
 
   ip->size = 0;
