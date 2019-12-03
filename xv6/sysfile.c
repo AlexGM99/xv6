@@ -73,22 +73,20 @@ sys_dup2(void)
   struct file *oldfile, *newfile; 
   int oldfd, newfd;
 // store the descriptor asociate to the first int param if it exists, if it doesn't->error.
-  if (argfd(0, &oldfd, &oldfile) < 0) {
-        return -1;
-  }
+  if (argfd(0, &oldfd, &oldfile) < 0)
+    return -1;
 // Fetch the second int arg from the stack to newfd in order to create a file descriptor in the suitable position if it's posible
-  if (argint(1, &newfd) < 0) {
-        return -1;
-  }
+  if (argint(1, &newfd) < 0) 
+    return -1;
 //check if the new fd is a valid number a don't execed the limits, if it does -> error ( checkup taken from argfd )
   if (newfd < 0 || newfd >=NOFILE)
-	return -1;
+	  return -1;
 //if newfd already exists and both are equals, returns the newfd
   if (newfd == oldfd)
-	return newfd;
+	  return newfd;
 //if there is an open file asociate to these procces and it isn't the same as the old->close it to do not have it open (like dup2 in linux)
   if ((newfile=myproc()->ofile[newfd]) != 0) // if (fd == 0 ? true) means that it is free to use in a new fd
-        fileclose(newfile);
+    fileclose(newfile);
 // copy the old fd into the new one fd pos.
   myproc()->ofile[newfd] = oldfile;
   filedup(oldfile); 

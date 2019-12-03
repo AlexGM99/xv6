@@ -103,7 +103,7 @@ sys_date(void)
 {
   acquire(&tickslock);
   struct rtcdate *r;
-  if(argptr(0, (char **)&r, 20) < 0)
+  if(argptr(0, (char **)&r, sizeof(struct rtcdate))< 0)
       return -1;
   cmostime(r);
   release(&tickslock);
